@@ -1,0 +1,590 @@
+﻿@page "/lightview"
+@rendermode InteractiveServer
+
+<p>Wybierz bank</p>
+
+<select @bind=SelectBank @onclick="ChangeBank">
+    @foreach (var bank in BanksList)
+    {
+        <option value="@bank.Id">@bank.Name</option>
+    }
+</select>
+
+<input type="checkbox" @bind=EditLightMode />
+
+<section id="lights-preview">
+    @if (EditLightMode)
+    {
+        <button @onclick="() => AddLight()">Nowe światło</button>
+    }
+    @if (CurrentBank != null)
+    {
+        @if (CurrentBank.Lights != null)
+            foreach (var light in CurrentBank.Lights)
+            {
+                @if (EditLightMode)
+                {
+                    <div style='position: absolute; left: @(light.xPos)px; top: @(light.yPos)px;' onmousedown="MouseDown(this, event)" onmousemove="MouseMove(this, event)" onmouseup="MouseUp(this, @light.Id)" onmouseleave="MouseUp(this, @light.Id)">
+                        <button @onclick="() => RemoveLight(light)">X</button>
+                        <Light LightId="@light.Id"
+                               LightName="@light.Name"
+                               EditMode=true
+                               startCh="@light.startCh"
+                               rCh="@light.rCh"
+                               gCh="@light.gCh"
+                               bCh="@light.bCh"></Light>
+                    </div>
+                }
+                else
+                {
+                    <div style='position: absolute; left: @(light.xPos)px; top: @(light.yPos)px;'>
+                        <Light LightId="@light.Id"
+                               LightName="@light.Name"
+                               EditMode=false
+                               startCh="@light.startCh"
+                               rCh="@light.rCh"
+                               gCh="@light.gCh"
+                               bCh="@light.bCh"></Light>
+                    </div>
+                }
+                <div>
+                </div>
+            }
+        else
+        {
+            <p>Brak świateł</p>
+        }
+    }
+</section>
+
+<section id="preset-preview">
+    <section id="preset-container">
+
+        <label>
+            Tryb edycji <input type="checkbox" @bind=EditPresetsMode />
+            @if (EditPresetsMode)
+            {
+                <button @onclick="() => AddPreset()">Dodaj Preset</button>
+            }
+        </label>
+
+        @if (PresetsList.Count > 0)
+        {
+            foreach (var preset in PresetsList)
+            {
+                if (!EditPresetsMode)
+                {
+                    <p>@preset.Name</p>
+                }
+                else
+                {
+                    <section class="preset-block" @onclick="() => SelectPreset(preset.Id)">
+                        <input type="text" @bind-value=preset.Name @bind-value:event="oninput" @onchange="() => SavePresetsInfo(preset.Id, preset.Name)" />
+                        <button @onclick="() => RemovePreset(preset)">x</button>
+                        <button @onclick="() => ChangePresetsOrder(preset.Id, 0)"> &lt </button>
+                        <button @onclick="() => ChangePresetsOrder(preset.Id, 1)"> &gt </button>
+                        @if (CurrentPreset == preset)
+                        {
+                            <div style="color: cadetblue">Wybrano</div>
+                        }
+                    </section>
+                }
+            }
+        }
+        else
+        {
+            <p>Brak presetów w tym banku</p>
+        }
+    </section>
+
+    <section id="sequence-container">
+        <section id="sequence-elements">
+            <label>Zapętla się <input type="checkbox" @bind="LoopPreset" /></label>
+            <ul>
+                <li @onclick="() => AddToSequence(1, 100)">Czekaj</li>
+                <li @onclick="() => AddToSequence(2, 500)">Fade</li>
+                @foreach (var light in CurrentBank.Lights)
+                {
+                    <li @onclick='() => AddToSequence(0, light.Id, "#000000")'>@light.Name</li>
+                }
+            </ul>
+        </section>
+
+        <section id="sequence-tree">
+            <ul>
+                @foreach (var seqEl in SequenceList)
+                {
+                    <li>
+                        <div>
+                            @if (seqEl.Type == 0)
+                            {
+                                <p>
+                                    @CurrentBank.Lights.Find(item => item.Id == seqEl.LightId).Name
+                                    <input type="color" @bind-value="@seqEl.Color" />
+                                </p>
+                            }
+                            else if (seqEl.Type == 1)
+                            {
+                                <p>Czekaj: <input @bind-value=seqEl.Duration type="number" />ms</p>
+                            }
+                            else
+                            {
+                                <p>Fade: <input @bind-value=seqEl.Duration type="number" />ms</p>
+                            }
+                            <button @onclick="() => RemoveSequenceElement(seqEl)">x</button>
+                            <button @onclick='() => ChangeSequenceOrder(seqEl, 0)'> &lt</button>
+                            <button @onclick='() => ChangeSequenceOrder(seqEl, 1)'> &gt</button>
+                        </div>
+                    </li>
+                }
+            </ul>
+            <button @onclick="() => SaveSequence()">Zapisz</button>
+        </section>
+    </section>
+</section>
+
+<section id="midi-preview">
+    @*
+•Jest też kontener z kanałami MIDI *(które się podświetlają gdy są uderzane)
+Po włączeniu EditMode, pojawiają się dwa okienka
+    ◘ W jednym okienku, do każdego elementu z listy urządzeń jest dodany radioButton
+        -> Po prawej stronie jest lista presetów/funkcji, które można przypisać do urządzenia
+    ◘ Drugie z dodawaniem do listy urządzeń MIDI -> Jest input z nazwą jaką chcemy dać, np. kick, snare; oraz z numerem kanału *(rozpoznawanie uderzenia)        
+*@
+    <section id="midi-devices">
+        <p>Kanał: <input type="number" /> | Nazwa: <input type="text" /> </p>
+        <button>Wykryj urządzenie</button>
+        <button>Dodaj urządzenie</button>
+        <ul>
+            @foreach (var dev in MIDIDevices)
+            {
+                <li> @dev.Key : <input type="number" value=@dev.Value /></li>
+            }
+        </ul>
+    </section>
+
+    <section id="midi-preset-assign">
+    </section>
+</section>
+
+@* Script for moving lights in lights-preview *@
+<script>
+    @isDragging = false;
+
+    function MouseDown(el, event) {
+    @isDragging = true;
+    offsetX = event.clientX - el.offsetLeft;
+    offsetY = event.clientY - el.offsetTop;
+    }
+
+    function MouseMove(el, event) {
+    if(@isDragging) {
+    el.style.left = parseInt((event.clientX - offsetX)/5)*5 + 'px';
+    el.style.top = parseInt((event.clientY - offsetY)/20)*20 + 'px';
+    }
+    }
+
+    function MouseUp(el, lightId) {
+    @isDragging = false;
+    let xPos = el.style.left;
+    let yPos = el.style.top;
+    DotNet.invokeMethodAsync('BlazorApp1', 'ChangeLightPos', lightId, xPos, yPos)
+    .catch(err => console.error(err));
+    }
+</script>
+
+@code {
+    //Changing bank of presets
+    public static List<Bank> BanksList = new();
+    public static Bank CurrentBank;
+    public static int SelectBank = 0;
+    public static void ChangeBank()
+    {
+        CurrentBank = BanksList[SelectBank];
+        ReadPresets();
+    }
+
+    //Presets
+    public static List<Preset> PresetsList = new();
+    public static Preset CurrentPreset = new();
+    public static bool LoopPreset;
+
+    //Sequence
+    public static List<SequenceElement> SequenceList = new();
+
+    //MIDI int => kanał MIDI, string => nazwa
+    public static Dictionary<int, string> MIDIDevices = new();
+
+    //For moving lights in lights-preview
+    public bool isDragging = false;
+    //Necessary for AddLight() and AddPreset() to use non-existing ID
+    protected static List<int> Ids = new List<int>();
+
+    //Edit modes
+    public bool EditLightMode = false;
+    public bool EditPresetsMode = true;
+    public bool EditMidiMode = false;
+
+    protected override async Task OnInitializedAsync()
+    {
+        string jsonString = File.ReadAllText("./Components/Lights/banks.json");
+        BanksList = JsonSerializer.Deserialize<List<Bank>>(jsonString);
+        ChangeBank();
+        ReadPresets();
+    }
+
+
+    //-----------------------------------    MIDI    ---------------------------------
+
+
+
+
+
+
+
+
+    //---------------------------------------    SEUQENCE    -----------------------------------------
+    public static void AddToSequence(int _type, int _duration)
+    {
+        SequenceElement newSequenceElement = new SequenceElement(_type, _duration);
+        SequenceList.Add(newSequenceElement);
+    }
+
+    public static void AddToSequence(int _type, int _lightId, string _color)
+    {
+        SequenceElement newSequenceElement = new SequenceElement(_type, _lightId, _color);
+        SequenceList.Add(newSequenceElement);
+    }
+
+    public static void ReadSequence()
+    {
+        SequenceList = CurrentPreset.Commands;
+    }
+
+    public static void SaveSequence()
+    {
+        for (int i = 1; i < SequenceList.Count; i++)
+        {
+            if ((SequenceList[i].Type == 2 || SequenceList[i].Type == 1) && SequenceList[i - 1].Type == 2)
+            {
+                Console.WriteLine("Po fadzie nie można dać ani kolejnego fade'a, ani delaya");
+                return;
+            }
+        }
+        for (int i = 0; i < PresetsList.Count; i++)
+        {
+            if (PresetsList[i] == CurrentPreset)
+            {
+                PresetsList[i].Commands = SequenceList;
+                PresetsList[i].LoopPreset = LoopPreset;
+                WriteToPresets(PresetsList);
+            }
+        }
+    }
+
+    public static void RemoveSequenceElement(SequenceElement _el)
+    {
+        SequenceList.Remove(_el);
+        SaveSequence();
+    }
+
+    public static void ChangeSequenceOrder(SequenceElement _el, int _direction)
+    {
+        //direction: 0 -> up = earlier , 1 -> down = after
+        for (int i = 0; i < SequenceList.Count; i++)
+        {
+            if (SequenceList[i] == _el)
+            {
+                int pos = i;
+                SequenceElement tmp = SequenceList[i];
+
+                if (_direction == 0 && pos != 0)
+                {
+                    SequenceList.Remove(tmp);
+                    SequenceList.Insert(pos - 1, tmp);
+                }
+                if (_direction == 1 && pos != SequenceList.Count - 1)
+                {
+                    SequenceList.Remove(tmp);
+                    SequenceList.Insert(pos + 1, tmp);
+                }
+                SaveSequence();
+                break;
+            }
+        }
+    }
+
+    public class SequenceElement
+    {
+        public int Id { get; set; }
+        // 0 -> light, 1 -> wait, 2 -> fade
+        public int Type { get; set; }
+        //Color channels. If it's not light, it equals 0
+        public int LightId { get; set; }
+        public string Color { get; set; }
+        //In case it's wait time or duration
+        public int Duration { get; set; }
+
+
+        public SequenceElement() { }
+
+        public SequenceElement(int _type, int _lightId)
+        {
+            this.Id = GetLastId();
+            this.Type = _type;
+            this.LightId = _lightId;
+        }
+
+        public SequenceElement(int _type, int _duration, string _color)
+        {
+            this.Id = GetLastId();
+            this.Type = _type;
+            this.Duration = _duration;
+            this.Color = _color;
+        }
+
+        private int GetLastId()
+        {
+            for (int i = 0; i < SequenceList.Count; i++)
+            {
+                Ids.Add(SequenceList[i].Id);
+            }
+            Ids.Sort();
+            for (int i = 0; i < Ids.Count; i++)
+            {
+                if (Ids[i] != i)
+                {
+                    return i;
+                }
+            }
+            return SequenceList.Count;
+        }
+    }
+
+    //-----------------------------------    PRESETS     ---------------------------------
+    public static void ReadPresets()
+    {
+        string filePath = $"./Components/Lights/bank{CurrentBank.Id}.json";
+        string jsonString = File.ReadAllText(filePath);
+        PresetsList = JsonSerializer.Deserialize<List<Preset>>(jsonString);
+        SelectPreset();
+    }
+
+    public static void WriteToPresets(List<Preset> _data)
+    {
+        var options = new JsonSerializerOptions { WriteIndented = true };
+        string jsonString = JsonSerializer.Serialize(_data, options);
+        File.WriteAllText("./Components/Lights/bank" + @CurrentBank.Id + ".json", jsonString);
+    }
+
+    public static void SelectPreset(int _id = 0)
+    {
+        CurrentPreset = PresetsList.Find(item => item.Id == _id);
+        if (CurrentPreset != null)
+        {
+            LoopPreset = CurrentPreset.LoopPreset;
+            ReadSequence();
+        }
+    }
+
+    public static void AddPreset()
+    {
+        var newPreset = new Preset();
+
+        if (PresetsList.Count > 0)
+        {
+            for (int i = 0; i < PresetsList.Count; i++)
+            {
+                Preset preset = PresetsList[i];
+                Ids.Add(preset.Id);
+            }
+            Ids.Sort();
+            for (int i = 0; i < Ids.Count; i++)
+            {
+                if (Ids[i] != i)
+                {
+                    newPreset.Id = i;
+                    break;
+                }
+                else newPreset.Id = PresetsList.Count;
+            }
+            Ids.Clear();
+        }
+        else
+        {
+            newPreset.Id = 0;
+        }
+        newPreset.Name = "Nowy Preset";
+        newPreset.LoopPreset = true;
+        PresetsList.Add(newPreset);
+        WriteToPresets(PresetsList);
+        ReadPresets();
+    }
+
+    public static void RemovePreset(Preset _preset)
+    {
+        PresetsList.Remove(_preset);
+        WriteToPresets(PresetsList);
+    }
+
+    public static void SavePresetsInfo(int _id, string _name)
+    {
+        for (int i = 0; i < PresetsList.Count; i++)
+        {
+            if (PresetsList[i].Id == _id)
+            {
+                PresetsList[i].Name = _name;
+                WriteToPresets(PresetsList);
+                break;
+            }
+        }
+    }
+
+    public static void ChangePresetsOrder(int _id, int _direction)
+    {
+        for (int i = 0; i < PresetsList.Count; i++)
+        {
+            if (PresetsList[i].Id == _id)
+            {
+                int pos = i;
+                Preset tmp = PresetsList[i];
+
+                if (_direction == 0 && pos != 0)
+                {
+                    PresetsList.Remove(tmp);
+                    PresetsList.Insert(pos - 1, tmp);
+                }
+                if (_direction == 1 && pos != PresetsList.Count - 1)
+                {
+                    PresetsList.Remove(tmp);
+                    PresetsList.Insert(pos + 1, tmp);
+                }
+                WriteToPresets(PresetsList);
+                break;
+            }
+        }
+
+    }
+
+    public class Preset
+    {
+        public int Id { get; set; }
+        public string Name { get; set; }
+        public bool LoopPreset { get; set; }
+        public List<SequenceElement> Commands { get; set; } = new();
+    }
+
+    //------------------------------------     LIGHTS     ------------------------------------
+    public static void WriteToBanks(List<Bank> _data)
+    {
+        var options = new JsonSerializerOptions { WriteIndented = true };
+        string jsonString = JsonSerializer.Serialize(_data, options);
+        File.WriteAllText("./Components/Lights/banks.json", jsonString);
+    }
+
+    public void AddLight()
+    {
+        var newLight = new Light();
+
+        if (CurrentBank.Lights.Count > 0)
+        {
+            for (int i = 0; i < CurrentBank.Lights.Count; i++)
+            {
+                Light light = CurrentBank.Lights[i];
+                Ids.Add(light.Id);
+            }
+            Ids.Sort();
+            for (int i = 0; i < Ids.Count; i++)
+            {
+                if (Ids[i] != i)
+                {
+                    newLight.Id = i;
+                    break;
+                }
+                else newLight.Id = CurrentBank.Lights.Count;
+            }
+        }
+        else newLight.Id = 0;
+        newLight.Name = "Nowe światło";
+
+        Ids.Clear();
+        CurrentBank.Lights.Add(newLight);
+        WriteToBanks(BanksList);
+        ChangeBank();
+    }
+
+    public static void RemoveLight(Light _light)
+    {
+        CurrentBank.Lights.Remove(_light);
+        WriteToBanks(BanksList);
+        ChangeBank();
+    }
+
+    [JSInvokable]
+    public static void ChangeLightPos(int lightId, string xPos, string yPos)
+    {
+        var currentLight = BanksList[SelectBank].Lights.FirstOrDefault(l => l.Id == lightId);
+        if (currentLight != null)
+        {
+            currentLight.xPos = int.Parse(xPos.Replace("px", ""));
+            currentLight.yPos = int.Parse(yPos.Replace("px", ""));
+            WriteToBanks(BanksList);
+        }
+    }
+
+    [JSInvokable]
+    public static void ChangeLightInfo(int _lightId, string _name, int _startCh, int _rCh, int _gCh, int _bCh)
+    {
+        Light CurrentLight;
+        Console.WriteLine(_lightId);
+
+        for (int i = 0; i < CurrentBank.Lights.Count; i++)
+        {
+            if (CurrentBank.Lights[i].Id == _lightId)
+            {
+                CurrentLight = CurrentBank.Lights[i];
+                CurrentLight.Name = _name;
+                CurrentLight.startCh = _startCh;
+                CurrentLight.rCh = _rCh;
+                CurrentLight.gCh = _gCh;
+                CurrentLight.bCh = _bCh;
+                WriteToBanks(BanksList);
+                break;
+            }
+        }
+
+    }
+
+    public class Bank
+    {
+        public int Id { get; set; }
+        public string Name { get; set; }
+        public List<Light> Lights { get; set; }
+
+    }
+
+    public class Light
+    {
+        public int Id { get; set; }
+        public string Name { get; set; }
+        public int xPos { get; set; }
+        public int yPos { get; set; }
+        public int startCh { get; set; }
+        public int rCh { get; set; }
+        public int gCh { get; set; }
+        public int bCh { get; set; }
+
+        public Light()
+        {
+            this.Id = 0;
+            this.Name = "";
+            this.xPos = 0;
+            this.yPos = 0;
+            this.startCh = 1;
+            this.rCh = 1;
+            this.gCh = 2;
+            this.bCh = 3;
+        }
+    }
+
+}

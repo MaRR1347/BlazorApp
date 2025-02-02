@@ -1,0 +1,15 @@
+﻿div {
+    border: 1px solid blue;
+    display: block;
+    padding: 20px;
+    text-align: center;
+/*    position: absolute;*/
+/*    top: 300px;*/
+}
+
+* {
+    -webkit-user-select: none;
+    -moz-user-select: none;
+    -ms-user-select: none;
+    user-select: none;
+}

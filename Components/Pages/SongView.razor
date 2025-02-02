@@ -1,0 +1,76 @@
+﻿@page "/songview"
+@rendermode InteractiveServer
+
+<section class="song" @onclick="() => TurnFramesOff()">
+    <p class="s-title">Mistrz kukiełek</p>
+    <p class="s-key">Tonacja ciul wie jaka</p>
+    <p class="s-text">
+        Koniec gry namiętności, wszystko się rozpada
+        Jestem twoim źródłem autodestrukcji
+        Żyły pompują strach, ssąc najciemniejszy mrok
+        Prowadząc do twojej konstrukcji śmierci
+
+        <span class="t-chords">JaKiEś A kor D y</span>
+        Skosztuj mnie, zobaczysz
+        Więcej to wszystko, czego potrzebujesz
+        <span class="t-chords">Jeśli som P oTrzeb ne</span>
+        Poświęcony temu,
+        Jak cię zabijam
+
+        Pełzaj szybciej (szybciej)
+        Słuchaj swego władcy (władcy)
+        Twoje życie płonie szybciej (szybciej)
+        <span class="t-note">A może jakiś przypis</span>
+        Słuchaj swego władcy, władcy
+
+        Władco marionetek, pociągam za twoje sznurki
+        <span class="t-note">Np teraz Hubert tańczy</span>
+        Wypaczam twój umysł i niszczę twoje sny
+        Oślepiony mną, nie widzisz nic
+    </p>
+</section>
+
+<div id="refresh-on-all-devices"></div>
+
+<section class="song-nav">
+    <div class="song-nav-item" id="go-back"></div>
+    <div class="song-nav-item" id="go-settings" @onclick="() => { if(!SettingsOn) {TurnFramesOff(1);} else TurnFramesOff();}"></div>
+    <div class="song-nav-item" id="go-list"></div>
+    <div class="song-nav-item" id="go-queue"></div>
+    <div class="song-nav-item" id="go-forward"></div>
+</section>
+
+@if (SettingsOn)
+{
+    <section class="frame-settings">
+        <UserSettingsComponent></UserSettingsComponent>
+    </section>
+}
+
+@code {
+    public bool SettingsOn = false;
+    public bool ListOn = false;
+    public bool QueueOn = false;
+
+    public void TurnFramesOff(int WhatsOn = 0)
+    {
+        SettingsOn = false;
+        ListOn = false;
+        QueueOn = false;
+        switch (WhatsOn)
+        {
+            case 1:
+                SettingsOn = true;
+                break;
+            case 2:
+                ListOn = true;
+                break;
+            case 3:
+                QueueOn = true;
+                break;
+        }
+
+
+    }
+
+}

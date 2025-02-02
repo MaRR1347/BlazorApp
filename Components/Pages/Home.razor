@@ -1,0 +1,93 @@
+﻿@page "/"
+@rendermode InteractiveServer
+
+@using BlazorApp1
+
+@inject IJSRuntime JSRuntime
+@inject ReadSerialPortService ReadSerialPortService
+@inject JSONService JSONService
+
+<PageTitle>Home</PageTitle> 
+
+<h1 @onclick="GetValue">esp32 test</h1>
+
+<p>SerialPort: @ScaleValue</p>
+
+<input type="text" @bind-value="MsgToArduino" @bind-value:event="onchange" />
+
+<button class="btn-primary">Wyślij</button>
+
+
+@* <button class="btn-primary" @onclick='() => {count++;}'>  *@
+@*     Zapisz do Jsona *@
+@* </button>  *@
+
+<UserSettingsComponent></UserSettingsComponent>
+
+
+@code {
+    public Dictionary<string, string> IsDesktopMode;
+
+
+    // private DotNetObjectReference<Home>? _dotNetObjectRef;
+
+    // protected override async Task OnAfterRenderAsync(bool firstRender)
+    // {
+    //     if (firstRender)
+    //     {
+    //         Create a reference to the .NET object
+    //         _dotNetObjectRef = DotNetObjectReference.Create(this);
+
+    //         Call the JavaScript function to attach the event listener
+    //         for (int i = 0; i <= count; i++)
+    //         {
+    //             string id = "light-" + i;
+    //             await JSRuntime.InvokeVoidAsync(
+    //                 "addEventListenerToElement",
+    //                 id,
+    //                 "click",
+    //                 _dotNetObjectRef);
+    //         }
+    //     }
+    // }
+
+
+    // [JSInvokable("OnEventTriggered")]
+    // public void OnEventTriggered(string eventType)
+    // {
+    //     Console.WriteLine($"Event triggered: {eventType}");
+    // }
+
+    // public void Dispose()
+    // {
+    //     Dispose of the .NET object reference
+    //     _dotNetObjectRef?.Dispose();
+    // }
+
+
+    //----------------INNE BADZIEWIE-----------------
+    Timer _updateTimer;
+    public string ScaleValue = "0.00";
+    public string MsgToArduino = "";
+
+    protected override async Task OnInitializedAsync()
+    {
+        ScaleValue = await ReadSerialPortService.GetSerialValue();
+        _updateTimer = new Timer(state => { InvokeAsync(GetValue); }, null, 0, 100);
+
+        string jsonString = File.ReadAllText("usersettings.json");
+        IsDesktopMode = JsonSerializer.Deserialize<Dictionary<string, string>>(jsonString);
+    }
+
+
+    public async Task GetValue()
+    {
+        ScaleValue = await ReadSerialPortService.GetSerialValue();
+        // await InvokeAsync(() => StateHasChanged());
+    }
+
+    public void sendToArduino()
+    {
+        ReadSerialPortService.SendDataToArduino(MsgToArduino);
+    }
+}

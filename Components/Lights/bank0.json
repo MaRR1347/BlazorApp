@@ -1,0 +1,47 @@
+[
+  {
+    "Id": 0,
+    "Name": "preset1",
+    "LoopPreset": true,
+    "Commands": []
+  },
+  {
+    "Id": 1,
+    "Name": "preset2",
+    "LoopPreset": true,
+    "Commands": [
+      {
+        "Id": 0,
+        "Type": 0,
+        "LightId": 1,
+        "Color": "#952d2d",
+        "Duration": 0
+      },
+      {
+        "Id": 0,
+        "Type": 0,
+        "LightId": 2,
+        "Color": null,
+        "Duration": 0
+      }
+    ]
+  },
+  {
+    "Id": 2,
+    "Name": "preset3",
+    "LoopPreset": false,
+    "Commands": []
+  },
+  {
+    "Id": 3,
+    "Name": "preset4",
+    "LoopPreset": true,
+    "Commands": []
+  },
+  {
+    "Id": 4,
+    "Name": "Nowy Preset",
+    "LoopPreset": true,
+    "Commands": []
+  }
+]

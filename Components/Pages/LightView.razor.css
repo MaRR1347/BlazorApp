@@ -1,0 +1,50 @@
+﻿#lights-preview {
+    width: 800px;
+    height: 300px;
+    position: relative;
+    border: 1px solid #ccc;
+    background-color: #444;
+}
+
+
+
+
+
+
+
+
+/*-------------PRESETS-------------*/
+#presets-window {
+    width: 800px;
+    height: 300px;
+    position: relative;
+    background-color: #393939;
+    display: flex;
+}
+
+#preset-preview {
+    display: flex;
+}
+
+#preset-container {
+    display: block;
+    width: 400px;
+    height: 300px;
+    border: 1px solid #444;
+}
+
+    #preset-container > label {
+        display: block;
+    }
+
+.preset-block {
+    position: relative;
+    display: inline-block;
+    width: 100px;
+    height: 100px;
+    border: 1px solid #444
+}
+
+.preset-block input[type="text"] {
+    width: 100px;
+}

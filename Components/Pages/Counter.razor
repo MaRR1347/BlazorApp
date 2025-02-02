@@ -1,0 +1,35 @@
+﻿@page "/counter"
+@rendermode InteractiveServer
+
+<PageTitle>Counter</PageTitle>
+
+<h1>Counter</h1>
+
+<p role="status">Current count: @currentCount</p>
+
+<button class="btn btn-primary" @onclick="AddCount">Dodaj liczenie</button>
+<button class="btn btn-primary" @onclick="IncrementCount">Click me</button>
+
+@code {
+    private int currentCount = 0;
+
+    private void IncrementCount()
+    {
+        currentCount++;
+    }
+
+    private void AddCount()
+    {
+        var _task = Task.Run(
+                async () =>
+                {
+                    for (; ; )
+                    {
+                        await Task.Delay(150);
+                        currentCount++;
+                        await InvokeAsync(() => StateHasChanged());
+                    }
+                }
+            );
+    }
+}
