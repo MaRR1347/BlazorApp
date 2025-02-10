@@ -48,3 +48,13 @@
 .preset-block input[type="text"] {
     width: 100px;
 }
+
+/*--------------MIDI--------------*/
+#midi-devices {
+    border: 1px solid #444;
+    width: 350px;
+}
+#midi-preset-assign {
+    border: 1px solid #444;
+    height: 250px;
+}

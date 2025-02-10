@@ -4,16 +4,16 @@
 @using BlazorApp1
 
 @inject IJSRuntime JSRuntime
-@inject ReadSerialPortService ReadSerialPortService
+@* @inject ReadSerialPortService ReadSerialPortService *@
 @inject JSONService JSONService
 
 <PageTitle>Home</PageTitle> 
 
-<h1 @onclick="GetValue">esp32 test</h1>
+@* <h1 @onclick="GetValue">esp32 test</h1> *@
 
-<p>SerialPort: @ScaleValue</p>
+@* <p>SerialPort: @ScaleValue</p> *@
 
-<input type="text" @bind-value="MsgToArduino" @bind-value:event="onchange" />
+@* <input type="text" @bind-value="MsgToArduino" @bind-value:event="onchange" /> *@
 
 <button class="btn-primary">Wyślij</button>
 
@@ -66,28 +66,28 @@
 
 
     //----------------INNE BADZIEWIE-----------------
-    Timer _updateTimer;
-    public string ScaleValue = "0.00";
-    public string MsgToArduino = "";
+    // Timer _updateTimer;
+    // public string ScaleValue = "0.00";
+    // public string MsgToArduino = "";
 
-    protected override async Task OnInitializedAsync()
-    {
-        ScaleValue = await ReadSerialPortService.GetSerialValue();
-        _updateTimer = new Timer(state => { InvokeAsync(GetValue); }, null, 0, 100);
+    // protected override async Task OnInitializedAsync()
+    // {
+    //     ScaleValue = await ReadSerialPortService.GetSerialValue();
+    //     _updateTimer = new Timer(state => { InvokeAsync(GetValue); }, null, 0, 100);
 
-        string jsonString = File.ReadAllText("usersettings.json");
-        IsDesktopMode = JsonSerializer.Deserialize<Dictionary<string, string>>(jsonString);
-    }
+    //     string jsonString = File.ReadAllText("usersettings.json");
+    //     IsDesktopMode = JsonSerializer.Deserialize<Dictionary<string, string>>(jsonString);
+    // }
 
 
-    public async Task GetValue()
-    {
-        ScaleValue = await ReadSerialPortService.GetSerialValue();
-        // await InvokeAsync(() => StateHasChanged());
-    }
+    // public async Task GetValue()
+    // {
+    //     ScaleValue = await ReadSerialPortService.GetSerialValue();
+    //     await InvokeAsync(() => StateHasChanged());
+    // }
 
-    public void sendToArduino()
-    {
-        ReadSerialPortService.SendDataToArduino(MsgToArduino);
-    }
+    // public void sendToArduino()
+    // {
+    //     ReadSerialPortService.SendDataToArduino(MsgToArduino);
+    // }
 }

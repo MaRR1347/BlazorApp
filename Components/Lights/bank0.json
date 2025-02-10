@@ -37,11 +37,5 @@
     "Name": "preset4",
     "LoopPreset": true,
     "Commands": []
-  },
-  {
-    "Id": 4,
-    "Name": "Nowy Preset",
-    "LoopPreset": true,
-    "Commands": []
   }
 ]

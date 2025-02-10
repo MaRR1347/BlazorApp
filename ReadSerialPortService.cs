@@ -4,15 +4,15 @@ using System.IO.Ports;
 
 namespace BlazorApp1
 {
-    public class ReadSerialPortService
+    public class SerialPortService
     {
         public string SerialPortValue { get; set; }
-
+        
         static SerialPort mySerialPort;
 
-        public ReadSerialPortService()
+        public SerialPortService(string COMPort)
         {
-            mySerialPort = new("COM10", 115200);
+            mySerialPort = new(COMPort, 921600);
 
             try
             {

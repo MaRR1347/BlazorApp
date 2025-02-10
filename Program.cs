@@ -7,7 +7,6 @@ var builder = WebApplication.CreateBuilder(args);
 // Add services to the container.
 builder.Services.AddRazorComponents()
     .AddInteractiveServerComponents();
-builder.Services.AddSingleton<ReadSerialPortService>();
 builder.Services.AddSingleton<JSONService>();
 builder.Services.Configure<CircuitOptions>(options => options.DetailedErrors = true);
 

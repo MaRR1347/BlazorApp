@@ -21,4 +21,6 @@
     <None Include="wwwroot\Fonts\Roboto-Regular.ttf" />
   </ItemGroup>
 
+  <ProjectExtensions><VisualStudio><UserProperties /></VisualStudio></ProjectExtensions>
+
 </Project>
