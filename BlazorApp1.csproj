@@ -11,7 +11,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Folder Include="Components\Images\" />
+    <Folder Include="wwwroot\Images\" />
   </ItemGroup>
 
   <ItemGroup>
@@ -19,6 +19,14 @@
     <None Include="wwwroot\Fonts\Roboto-Light.ttf" />
     <None Include="wwwroot\Fonts\Roboto-Medium.ttf" />
     <None Include="wwwroot\Fonts\Roboto-Regular.ttf" />
+    <None Include="wwwroot\Images\angle-left.svg" />
+    <None Include="wwwroot\Images\arrow-small-left.svg" />
+    <None Include="wwwroot\Images\cross.svg" />
+    <None Include="wwwroot\Images\home.svg" />
+    <None Include="wwwroot\Images\list.svg" />
+    <None Include="wwwroot\Images\menu-burger.svg" />
+    <None Include="wwwroot\Images\refresh.svg" />
+    <None Include="wwwroot\Images\settings-sliders.svg" />
   </ItemGroup>
 
   <ProjectExtensions><VisualStudio><UserProperties /></VisualStudio></ProjectExtensions>

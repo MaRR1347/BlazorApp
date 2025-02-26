@@ -14,7 +14,6 @@
 </select>
 
 <input type="checkbox" @bind=EditLightMode />
-
 <section id="lights-preview">
     @if (EditLightMode)
     {
@@ -102,51 +101,83 @@
 
     <section id="sequence-container">
         <section id="sequence-elements">
-            <label>Zapętla się <input type="checkbox" @bind="LoopPreset" /></label>
-            <ul>
-                <li @onclick="() => AddToSequence(1, 100)">Czekaj</li>
-                <li @onclick="() => AddToSequence(2, 500)">Fade</li>
-                @foreach (var light in CurrentBank.Lights)
-                {
-                    <li @onclick='() => AddToSequence(0, light.Id, "#000000")'>@light.Name</li>
-                }
-            </ul>
+            <label>Tryb edycji: <input type="checkbox" @bind=EditSequenceMode /></label>
+            @if(EditSequenceMode) {
+                <label>Zapętla się <input type="checkbox" @bind="LoopPreset" /></label>
+                <ul>
+                    <li @onclick="() => AddToSequence(1, 100)">Czekaj</li>
+                    <li @onclick="() => AddToSequence(2, 500)">Fade</li>
+                    @foreach (var light in CurrentBank.Lights)
+                    {
+                        <li @onclick='() => AddToSequence(0, light.Id, "#000000")'>@light.Name</li>
+                    }
+                </ul>
+                <section id="sequence-tree">
+                    <ul>
+                        @foreach (var seqEl in SequenceList)
+                        {
+                            <li>
+                                <div>
+                                    @if (seqEl.Type == 0)
+                                    {
+                                        <p>
+                                            @CurrentBank.Lights.Find(item => item.Id == seqEl.LightId).Name
+                                            <input type="color" @bind-value="@seqEl.Color" />
+                                        </p>
+                                    }
+                                    else if (seqEl.Type == 1)
+                                    {
+                                        <p>Czekaj: <input @bind-value=seqEl.Duration type="number" />ms</p>
+                                    }
+                                    else
+                                    {
+                                        <p>Fade: <input @bind-value=seqEl.Duration type="number" />ms</p>
+                                    }
+                                    <button @onclick="() => RemoveSequenceElement(seqEl)">x</button>
+                                    <button @onclick='() => ChangeSequenceOrder(seqEl, 0)'> &lt</button>
+                                    <button @onclick='() => ChangeSequenceOrder(seqEl, 1)'> &gt</button>
+                                </div>
+                            </li>
+                        }
+                    </ul>
+                    <button @onclick="() => SaveSequence()">Zapisz</button>
+                </section>
+            }
+            else {
+                <section id="sequence-tree">
+                    <ul>
+                        @foreach (var seqEl in SequenceList)
+                        {
+                            <li>
+                                <div>
+                                    @if (seqEl.Type == 0)
+                                    {
+                                        <p>
+                                            @CurrentBank.Lights.Find(item => item.Id == seqEl.LightId).Name
+                                            <span class="color-preview" style="background-color: @seqEl.Color"> </span>
+                                        </p>
+                                    }
+                                    else if (seqEl.Type == 1)
+                                    {
+                                        <p>Czekaj: @seqEl.Duration</p>
+                                    }
+                                    else
+                                    {
+                                        <p>Fade: @seqEl.Duration </p>
+                                    }
+                                </div>
+                            </li>
+                        }
+                    </ul>
+                </section>
+            }
         </section>
 
-        <section id="sequence-tree">
-            <ul>
-                @foreach (var seqEl in SequenceList)
-                {
-                    <li>
-                        <div>
-                            @if (seqEl.Type == 0)
-                            {
-                                <p>
-                                    @CurrentBank.Lights.Find(item => item.Id == seqEl.LightId).Name
-                                    <input type="color" @bind-value="@seqEl.Color" />
-                                </p>
-                            }
-                            else if (seqEl.Type == 1)
-                            {
-                                <p>Czekaj: <input @bind-value=seqEl.Duration type="number" />ms</p>
-                            }
-                            else
-                            {
-                                <p>Fade: <input @bind-value=seqEl.Duration type="number" />ms</p>
-                            }
-                            <button @onclick="() => RemoveSequenceElement(seqEl)">x</button>
-                            <button @onclick='() => ChangeSequenceOrder(seqEl, 0)'> &lt</button>
-                            <button @onclick='() => ChangeSequenceOrder(seqEl, 1)'> &gt</button>
-                        </div>
-                    </li>
-                }
-            </ul>
-            <button @onclick="() => SaveSequence()">Zapisz</button>
-        </section>
     </section>
 </section>
 
-<section id="midi-preview">
+<input type="checkbox" @bind=EditLightMode />
+<section id="midi-preview" class="frame-">
     @*
 •Jest też kontener z kanałami MIDI *(które się podświetlają gdy są uderzane)
 Po włączeniu EditMode, pojawiają się dwa okienka
@@ -272,7 +303,9 @@ Po włączeniu EditMode, pojawiają się dwa okienka
     //Edit modes
     public bool EditLightMode = false;
     public bool EditPresetsMode = true;
-    public bool EditMidiMode = false;
+    public bool EditSequenceMode = false;
+    public bool EditMidiDevMode = false;
+    public bool EditMidiAssignMode = false;
 
     protected override async Task OnInitializedAsync()
     {
@@ -361,11 +394,16 @@ Po włączeniu EditMode, pojawiają się dwa okienka
 
     public static void DetectMIDIDevice()
     {
-        if (MsgFromArduino.Count() > 0)
-        {
-            var tmp = MsgFromArduino.Split(",");
-            Console.WriteLine(tmp[1]);
-
+        if(MsgFromArduino != "") {
+            string curMIDICh = "";
+            for (int i = 3; i < MsgFromArduino.Length; i++)
+            {
+                if (MsgFromArduino[i] == 'V')
+                    break;
+                else
+                    curMIDICh += MsgFromArduino[i];
+            }
+            MIDIDevKey = int.Parse(curMIDICh);
         }
     }
 

@@ -1,49 +1,61 @@
 ﻿@page "/songview"
 @rendermode InteractiveServer
 
-<section class="song" @onclick="() => TurnFramesOff()">
-    <p class="s-title">Mistrz kukiełek</p>
-    <p class="s-key">Tonacja ciul wie jaka</p>
-    <p class="s-text">
-        Koniec gry namiętności, wszystko się rozpada
-        Jestem twoim źródłem autodestrukcji
-        Żyły pompują strach, ssąc najciemniejszy mrok
-        Prowadząc do twojej konstrukcji śmierci
+<section class="song-view">
+    <div id="refresh-on-all-devices" class="refresh-bttn"><img src="Images/refresh.svg"/></div>
 
-        <span class="t-chords">JaKiEś A kor D y</span>
-        Skosztuj mnie, zobaczysz
-        Więcej to wszystko, czego potrzebujesz
-        <span class="t-chords">Jeśli som P oTrzeb ne</span>
-        Poświęcony temu,
-        Jak cię zabijam
+    <section class="song" @onclick="() => {if(SettingsOn) TurnFramesOff();}">
+        <p class="s-title">Mistrz kukiełek</p>
+        <p class="s-key">Tonacja ciul wie jaka</p>
+        <p class="s-text">Koniec gry namiętności, wszystko się rozpada
+            Jestem twoim źródłem autodestrukcji
+            Żyły pompują strach, ssąc najciemniejszy mrok
+            Prowadząc do twojej konstrukcji śmierci
 
-        Pełzaj szybciej (szybciej)
-        Słuchaj swego władcy (władcy)
-        Twoje życie płonie szybciej (szybciej)
-        <span class="t-note">A może jakiś przypis</span>
-        Słuchaj swego władcy, władcy
+            <span class="t-chords">JaKiEś A kor D y</span>
+            Skosztuj mnie, zobaczysz
+            Więcej to wszystko, czego potrzebujesz
+            <span class="t-chords">Jeśli som P oTrzessssssssssssssssssssssssssssssb ne</span>
+            Poświęcony temu,
+            Jak cię zabijam
 
-        Władco marionetek, pociągam za twoje sznurki
-        <span class="t-note">Np teraz Hubert tańczy</span>
-        Wypaczam twój umysł i niszczę twoje sny
-        Oślepiony mną, nie widzisz nic
-    </p>
+            Pełzaj szybciej (szybciej)
+            Słuchaj swego władcy (władcy)
+            Twoje życie płonie szybciej (szybciej)
+            <span class="t-note">A może jakiś przypis</span>
+            Słuchaj swego władcy, władcy
+
+            Władco marionetek, pociągam za twoje sznurki
+            <span class="t-note">Np teraz Hubert tańczy</span>
+            Wypaczam twój umysł i niszczę twoje sny
+            Oślepiony mną, nie widzisz nic
+        </p>
+    </section>
+
+    <section class="song-nav">
+        <div class="song-nav-item" id="nav-back"><img src="Images/angle-left.svg" /></div>
+        <div class="song-nav-item" id="nav-settings" @onclick="() => { if(!SettingsOn) {TurnFramesOff(1);} else TurnFramesOff();}"><img src="Images/settings.svg" /></div>
+        <div class="song-nav-item" id="nav-list"><img src="Images/menu-burger.svg" /></div>
+        <div class="song-nav-item" id="nav-queue"><img src="Images/multiple-alt.svg" /></div>
+        <div class="song-nav-item" id="nav-forward"><img src="Images/angle-left.svg" /></div>
+    </section>
 </section>
 
-<div id="refresh-on-all-devices"></div>
-
-<section class="song-nav">
-    <div class="song-nav-item" id="go-back"></div>
-    <div class="song-nav-item" id="go-settings" @onclick="() => { if(!SettingsOn) {TurnFramesOff(1);} else TurnFramesOff();}"></div>
-    <div class="song-nav-item" id="go-list"></div>
-    <div class="song-nav-item" id="go-queue"></div>
-    <div class="song-nav-item" id="go-forward"></div>
-</section>
 
 @if (SettingsOn)
 {
-    <section class="frame-settings">
+    <section class="frame frame-settings">
         <UserSettingsComponent></UserSettingsComponent>
+    </section>
+}
+@if (ListOn) {
+    <section class="frame">
+        Lista
+    </section>
+}
+@if (QueueOn) {
+    <section class="frame">
+        Kolejka
     </section>
 }
 

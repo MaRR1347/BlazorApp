@@ -1,16 +1,11 @@
-﻿#lights-preview {
+﻿/*------------LIGHTS-------------*/
+#lights-preview {
     width: 800px;
     height: 300px;
     position: relative;
     border: 1px solid #ccc;
     background-color: #444;
 }
-
-
-
-
-
-
 
 
 /*-------------PRESETS-------------*/
@@ -48,6 +43,16 @@
 .preset-block input[type="text"] {
     width: 100px;
 }
+
+
+    .color-preview {
+        content: " ";
+        position: relative;
+        display: inline-block;
+        left: 10px;
+        width: 50px;
+        height: 30px;
+    }
 
 /*--------------MIDI--------------*/
 #midi-devices {

@@ -2,6 +2,8 @@
     position: relative;
     display: flex;
     flex-direction: column;
+    width: 100vw;
+    height: 100vh;
 }
 
 main {
@@ -12,9 +14,9 @@ nav {
 }
 
 
-@media (min-width: 641px) {
+@media (min-width: 768px) {
     .page {
-        flex-direction: row;
+        flex-direction: column;
     }
 }
 
