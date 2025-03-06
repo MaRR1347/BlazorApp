@@ -16,8 +16,8 @@
       {
         "Id": 1,
         "Name": "Light3",
-        "xPos": 615,
-        "yPos": 60,
+        "xPos": 620,
+        "yPos": 40,
         "startCh": 1,
         "rCh": 4,
         "gCh": 5,
@@ -26,7 +26,7 @@
       {
         "Id": 0,
         "Name": "Nowe \u015Bwiat\u0142o",
-        "xPos": 295,
+        "xPos": 300,
         "yPos": 0,
         "startCh": 1,
         "rCh": 1,

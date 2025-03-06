@@ -1,15 +1,24 @@
-﻿div {
-    border: 1px solid blue;
-    display: block;
-    padding: 20px;
-    text-align: center;
-/*    position: absolute;*/
-/*    top: 300px;*/
-}
-
-* {
+﻿* {
     -webkit-user-select: none;
     -moz-user-select: none;
     -ms-user-select: none;
     user-select: none;
+}
+div {
+    display: block;
+    padding: 20px;
+    width: 120px;
+    height: 120px;
+    text-align: center;
+    border: 1px solid black;
+    border-radius: 100%;
+    background-color: #222;
+}
+input[id^="edit-light"] {
+    width: 28px;
+    height: 28px;
+    position: absolute;
+    background-color: rgb(200, 22, 22);
+    color: #fff;
+    border-radius: 100%;
 }
