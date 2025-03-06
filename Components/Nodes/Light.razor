@@ -1,6 +1,5 @@
 ﻿@using BlazorApp1.Components.Pages
 
-
 <div id="light-@LightId" draggable="false">
     @if(EditMode){
         <input type="checkbox" @bind=EditLight id="edit-light@(LightId)-toggler"/>
@@ -8,19 +7,20 @@
 
     @if (EditLight)
     {
-        <input type="submit" @onclick="() => ChangeInfo()" onfocus="document.querySelector('#edit-light@(LightId)-toggler').click()" />
+        <button @onclick="() => LightView.RemoveLight(LightId)" class="remove-light">X</button>
+        <span>Nazwa: </span>
+            <input type="text" @bind-value=LightName />
 
-        <label>@LightId.ToString()<input type="text" @bind-value=LightName /></label>
-        <br />
+        <span>Kanał początkowy: </span>
+        <span>
+            <input type="number" @bind-value=startCh />
+            <input type="submit" @onclick="() => ChangeInfo()" onfocus="document.querySelector('#edit-light@(LightId)-toggler').click()" />
+        </span>
 
-        <label>Kanał początkowy: <input type="number" @bind-value=startCh /></label>
-        <br />
 
-        <label>Kanał R: <input type="number" @bind-value=rCh /></label>
-        <br />
-        <label>Kanał G: <input type="number" @bind-value=gCh /></label>
-        <br />
-        <label>Kanał B: <input type="number" @bind-value=bCh /></label>
+        @* <label>Kanał R: <input type="number" @bind-value=rCh /></label> *@
+        @* <label>Kanał G: <input type="number" @bind-value=gCh /></label> *@
+        @* <label>Kanał B: <input type="number" @bind-value=bCh /></label> *@
     }
     else {
         <p>@LightName</p>

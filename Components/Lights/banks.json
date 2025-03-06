@@ -4,40 +4,30 @@
     "Name": "bank1",
     "Lights": [
       {
-        "Id": 2,
-        "Name": "zerodwa",
-        "xPos": 45,
-        "yPos": 60,
-        "startCh": 1,
-        "rCh": 1,
-        "gCh": 2,
-        "bCh": 3
-      },
-      {
-        "Id": 1,
-        "Name": "Light3",
-        "xPos": 620,
-        "yPos": 40,
-        "startCh": 1,
-        "rCh": 4,
-        "gCh": 5,
-        "bCh": 6
-      },
-      {
         "Id": 0,
         "Name": "Nowe \u015Bwiat\u0142o",
-        "xPos": 300,
-        "yPos": 0,
+        "xPos": 600,
+        "yPos": 40,
         "startCh": 1,
         "rCh": 1,
         "gCh": 8,
         "bCh": 9
       },
       {
-        "Id": 3,
+        "Id": 2,
         "Name": "Nowe \u015Bwiat\u0142o",
-        "xPos": 290,
+        "xPos": 295,
         "yPos": 140,
+        "startCh": 1,
+        "rCh": 1,
+        "gCh": 2,
+        "bCh": 3
+      },
+      {
+        "Id": 4,
+        "Name": "Nowe \u015Bwiat\u0142o",
+        "xPos": 100,
+        "yPos": 80,
         "startCh": 1,
         "rCh": 1,
         "gCh": 2,

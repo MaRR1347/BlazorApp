@@ -1,6 +1,7 @@
 ﻿@page "/lightview"
 @rendermode InteractiveServer
 @using BlazorApp1
+@inject NavigationManager NavigationManager
 
 @* @inject ReadSerialPortService ReadSerialPortService *@
 
@@ -19,6 +20,7 @@
     {
         <button @onclick="() => AddLight()">Nowe światło</button>
     }
+
     @if (CurrentBank != null)
     {
         @if (CurrentBank.Lights != null)
@@ -26,8 +28,8 @@
             {
                 @if (EditLightMode)
                 {
-                    <div style='position: absolute; left: @(light.xPos)px; top: @(light.yPos)px;' onmousedown="MouseDown(this, event)" onmousemove="MouseMove(this, event)" onmouseup="MouseUp(this, @light.Id)" onmouseleave="MouseUp(this, @light.Id)">
-                        <button @onclick="() => RemoveLight(light)">X</button>
+                    <div style='position: absolute; left: @(light.xPos)px; top: @(light.yPos)px;'  
+                    onmousedown="MouseDown(this, event)" onmousemove="MouseMove(this, event)" onmouseup="MouseUp(this, @light.Id)" onmouseleave="MouseUp(this, @light.Id)">
                         <Light LightId="@light.Id"
                         LightName="@light.Name"
                         EditMode=true
@@ -721,11 +723,14 @@ Po włączeniu EditMode, pojawiają się dwa okienka
         ChangeBank();
     }
 
-    public static void RemoveLight(Light _light)
+    public static async Task RemoveLight(int Id)
     {
-        CurrentBank.Lights.Remove(_light);
-        WriteToBanks(BanksList);
-        ChangeBank();
+        Light? _light = CurrentBank.Lights.Find(item => item.Id == Id);
+        if(_light != null) {
+            CurrentBank.Lights.Remove(_light);
+            WriteToBanks(BanksList);
+            ChangeBank();
+        }
     }
 
     [JSInvokable]
