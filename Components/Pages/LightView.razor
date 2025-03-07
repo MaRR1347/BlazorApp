@@ -5,8 +5,6 @@
 
 @* @inject ReadSerialPortService ReadSerialPortService *@
 
-<p>Wybierz bank</p>
-
 <select @bind=SelectBank @onclick="ChangeBank">
     @foreach (var bank in BanksList)
     {
@@ -14,7 +12,12 @@
     }
 </select>
 
-<input type="checkbox" @bind=EditLightMode />
+<div class="checkbox-wrapper-22">
+    <label class="switch">
+        <input type="checkbox" @bind=EditLightMode />
+        <div class="slider round"></div>
+    </label>
+</div>
 <section id="lights-preview">
     @if (EditLightMode)
     {
@@ -29,26 +32,26 @@
                 @if (EditLightMode)
                 {
                     <div style='position: absolute; left: @(light.xPos)px; top: @(light.yPos)px;'
-                         onmousedown="MouseDown(this, event)" onmousemove="MouseMove(this, event)" onmouseup="MouseUp(this, @light.Id)" onmouseleave="MouseUp(this, @light.Id)">
+                    onmousedown="MouseDown(this, event)" onmousemove="MouseMove(this, event)" onmouseup="MouseUp(this, @light.Id)" onmouseleave="MouseUp(this, @light.Id)">
                         <Light LightId="@light.Id"
-                               LightName="@light.Name"
-                               EditMode=true
-                               startCh="@light.startCh"
-                               rCh="@light.rCh"
-                               gCh="@light.gCh"
-                               bCh="@light.bCh"></Light>
+                        LightName="@light.Name"
+                        EditMode=true
+                        startCh="@light.startCh"
+                        rCh="@light.rCh"
+                        gCh="@light.gCh"
+                        bCh="@light.bCh"></Light>
                     </div>
                 }
                 else
                 {
                     <div style='position: absolute; left: @(light.xPos)px; top: @(light.yPos)px;'>
                         <Light LightId="@light.Id"
-                               LightName="@light.Name"
-                               EditMode=false
-                               startCh="@light.startCh"
-                               rCh="@light.rCh"
-                               gCh="@light.gCh"
-                               bCh="@light.bCh"></Light>
+                        LightName="@light.Name"
+                        EditMode=false
+                        startCh="@light.startCh"
+                        rCh="@light.rCh"
+                        gCh="@light.gCh"
+                        bCh="@light.bCh"></Light>
                     </div>
                 }
                 <div>
@@ -63,34 +66,31 @@
 
 <section id="preset-preview">
     <section id="preset-container">
-
-        <label>
-            Tryb edycji <input type="checkbox" @bind=EditPresetsMode />
-            @if (EditPresetsMode)
-            {
-                <button @onclick="AddPreset">Dodaj Preset</button>
-            }
-        </label>
-
+        <div class="checkbox-wrapper-22">
+            <label class="switch">
+                <input type="checkbox" @bind=EditPresetsMode />
+                <span class="slider round"></span>
+            </label>
+        </div>
+        @if (EditPresetsMode)
+        {
+            <button @onclick="AddPreset">Dodaj Preset</button>
+        }
         @if (PresetsList.Count > 0)
         {
             foreach (var preset in PresetsList)
             {
                 if (!EditPresetsMode)
                 {
-                    <p>@preset.Name</p>
+                    <section class="preset-block" @onclick="() => {PresetOn(preset.Id);}">@preset.Name</section>
                 }
                 else
                 {
-                    <section class="preset-block" @onclick="() => SelectPreset(preset.Id)">
-                        <input type="text" @bind-value=preset.Name @bind-value:event="oninput" @onchange="() => SavePresetsInfo(preset.Id, preset.Name)" />
-                        <button @onclick="() => RemovePreset(preset)">x</button>
-                        <button @onclick="() => ChangePresetsOrder(preset.Id, 0)"> &lt </button>
-                        <button @onclick="() => ChangePresetsOrder(preset.Id, 1)"> &gt </button>
-                        @if (CurrentPreset == preset)
-                        {
-                            <div style="color: cadetblue">Wybrano</div>
-                        }
+                    <section class="@((CurrentPreset== preset)?"edit-preset-block edit-preset-block-active":"edit-preset-block")" @onclick="() => SelectPreset(preset.Id)">
+                        <input type="text" @bind-value=preset.Name @bind-value:event="oninput" @onchange="() => SavePresetsInfo(preset.Id, preset.Name)"/>
+                        <button @onclick="() => RemovePreset(preset)" class="remove-preset">x</button>
+                        <button @onclick="() => ChangePresetsOrder(preset.Id, 0)" class="preview-next-preset" > &lt </button>
+                        <button @onclick="() => ChangePresetsOrder(preset.Id, 1)" class="preview-next-preset" > &gt </button>
                     </section>
                 }
             }
@@ -103,7 +103,12 @@
 
     <section id="sequence-container">
         <section id="sequence-elements">
-            <label>Tryb edycji: <input type="checkbox" @bind=EditSequenceMode /></label>
+            <div class="checkbox-wrapper-22">
+                <label class="switch">
+                    <input type="checkbox" @bind=EditSequenceMode />
+                    <span class="slider round"></span>
+                </label>
+            </div>
             @if (EditSequenceMode)
             {
                 <label>Zapętla się <input type="checkbox" @bind="LoopPreset" /></label>
@@ -183,15 +188,13 @@
     </section>
 </section>
 
-<input type="checkbox" @bind=EditLightMode />
+<div class="checkbox-wrapper-22">
+    <label class="switch">
+        <input type="checkbox" @bind=EditMIDIDevMode />
+        <span class="slider round"></span>
+    </label>
+</div>
 <section id="midi-preview" class="frame-">
-    @*
-•Jest też kontener z kanałami MIDI *(które się podświetlają gdy są uderzane)
-Po włączeniu EditMode, pojawiają się dwa okienka
-    ◘ W jednym okienku, do każdego elementu z listy urządzeń jest dodany radioButton
-        -> Po prawej stronie jest lista presetów/funkcji, które można przypisać do urządzenia
-    ◘ Drugie z dodawaniem do listy urządzeń MIDI -> Jest input z nazwą jaką chcemy dać, np. kick, snare; oraz z numerem kanału *(rozpoznawanie uderzenia)        
-*@
     <section id="midi-devices">
         <p>Kanał: <input type="number" @bind-value=MIDIDevKey /> | Nazwa: <input type="text" @bind-value=MIDIDevName /> </p>
         <button @onclick='DetectMIDIDevice'>Wykryj urządzenie</button>
@@ -311,8 +314,8 @@ Po włączeniu EditMode, pojawiają się dwa okienka
     public bool EditLightMode = false;
     public bool EditPresetsMode = true;
     public bool EditSequenceMode = false;
-    public bool EditMidiDevMode = false;
-    public bool EditMidiAssignMode = false;
+    public bool EditMIDIDevMode = false;
+    public bool EditMIDIAssignMode = false;
 
     protected override async Task OnInitializedAsync()
     {
@@ -324,14 +327,44 @@ Po włączeniu EditMode, pojawiają się dwa okienka
     }
 
     //------------------------------------------   DMX   ----------------------------------------------
+    public static async Task PresetOn(int _id)
+    {
+        Preset _preset;
+        _preset = PresetsList.Find((item) => item.Id == _id);
 
+        if (SerialPort != null)
+        {
+            while (true)
+            {
+                foreach(var command in _preset.Commands)
+                {
+                    switch(command.Type)
+                    {
+                        case 0:
+                            Light _light = CurrentBank.Lights.Find((item) => item.Id == command.LightId);
+
+                            int rCh = _light.rCh;
+
+                            
+                            break;
+                        case 1:
+                            break;
+                        case 2:
+                            break;
+
+                    }
+                }   
+            }
+        }
+
+    }
 
     //------------------------------------------   MIDI READ   ---------------------------------------------
     Timer _updateTimer;
     public static string COMPort = "COM3";
     public static string MsgFromArduino = "";
     public string MsgToArduino = "";
-    public static SerialPortService SerialPort;
+    public static SerialPortService? SerialPort;
     public static int GotMsgDiode = 0;
 
     protected async Task ConnectToArduino()
@@ -809,5 +842,4 @@ Po włączeniu EditMode, pojawiają się dwa okienka
             this.bCh = 3;
         }
     }
-
 }

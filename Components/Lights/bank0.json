@@ -1,7 +1,7 @@
 [
   {
     "Id": 0,
-    "Name": "preset1",
+    "Name": "Nowy Preset",
     "LoopPreset": true,
     "Commands": []
   },
@@ -9,14 +9,18 @@
     "Id": 1,
     "Name": "Nowy Preset",
     "LoopPreset": true,
-    "Commands": [
-      {
-        "Id": 0,
-        "Type": 0,
-        "LightId": 0,
-        "Color": "#3717d3",
-        "Duration": 1
-      }
-    ]
+    "Commands": []
+  },
+  {
+    "Id": 3,
+    "Name": "Nowy Preset",
+    "LoopPreset": true,
+    "Commands": []
+  },
+  {
+    "Id": 4,
+    "Name": "Nowy Preset",
+    "LoopPreset": true,
+    "Commands": []
   }
 ]
