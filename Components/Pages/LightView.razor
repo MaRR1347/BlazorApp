@@ -28,27 +28,27 @@
             {
                 @if (EditLightMode)
                 {
-                    <div style='position: absolute; left: @(light.xPos)px; top: @(light.yPos)px;'  
-                    onmousedown="MouseDown(this, event)" onmousemove="MouseMove(this, event)" onmouseup="MouseUp(this, @light.Id)" onmouseleave="MouseUp(this, @light.Id)">
+                    <div style='position: absolute; left: @(light.xPos)px; top: @(light.yPos)px;'
+                         onmousedown="MouseDown(this, event)" onmousemove="MouseMove(this, event)" onmouseup="MouseUp(this, @light.Id)" onmouseleave="MouseUp(this, @light.Id)">
                         <Light LightId="@light.Id"
-                        LightName="@light.Name"
-                        EditMode=true
-                        startCh="@light.startCh"
-                        rCh="@light.rCh"
-                        gCh="@light.gCh"
-                        bCh="@light.bCh"></Light>
+                               LightName="@light.Name"
+                               EditMode=true
+                               startCh="@light.startCh"
+                               rCh="@light.rCh"
+                               gCh="@light.gCh"
+                               bCh="@light.bCh"></Light>
                     </div>
                 }
                 else
                 {
                     <div style='position: absolute; left: @(light.xPos)px; top: @(light.yPos)px;'>
                         <Light LightId="@light.Id"
-                        LightName="@light.Name"
-                        EditMode=false
-                        startCh="@light.startCh"
-                        rCh="@light.rCh"
-                        gCh="@light.gCh"
-                        bCh="@light.bCh"></Light>
+                               LightName="@light.Name"
+                               EditMode=false
+                               startCh="@light.startCh"
+                               rCh="@light.rCh"
+                               gCh="@light.gCh"
+                               bCh="@light.bCh"></Light>
                     </div>
                 }
                 <div>
@@ -104,7 +104,8 @@
     <section id="sequence-container">
         <section id="sequence-elements">
             <label>Tryb edycji: <input type="checkbox" @bind=EditSequenceMode /></label>
-            @if(EditSequenceMode) {
+            @if (EditSequenceMode)
+            {
                 <label>Zapętla się <input type="checkbox" @bind="LoopPreset" /></label>
                 <ul>
                     <li @onclick="() => AddToSequence(1, 100)">Czekaj</li>
@@ -115,37 +116,41 @@
                     }
                 </ul>
                 <section id="sequence-tree">
-                    <ul>
-                        @foreach (var seqEl in SequenceList)
-                        {
-                            <li>
-                                <div>
-                                    @if (seqEl.Type == 0)
-                                    {
-                                        <p>
-                                            @CurrentBank.Lights.Find(item => item.Id == seqEl.LightId).Name
-                                            <input type="color" @bind-value="@seqEl.Color" />
-                                        </p>
-                                    }
-                                    else if (seqEl.Type == 1)
-                                    {
-                                        <p>Czekaj: <input @bind-value=seqEl.Duration type="number" />ms</p>
-                                    }
-                                    else
-                                    {
-                                        <p>Fade: <input @bind-value=seqEl.Duration type="number" />ms</p>
-                                    }
-                                    <button @onclick="() => RemoveSequenceElement(seqEl)">x</button>
-                                    <button @onclick='() => ChangeSequenceOrder(seqEl, 0)'> &lt</button>
-                                    <button @onclick='() => ChangeSequenceOrder(seqEl, 1)'> &gt</button>
-                                </div>
-                            </li>
-                        }
-                    </ul>
+                    @if (SequenceList.Count > 0)
+                    {
+                        <ul>
+                            @foreach (var seqEl in SequenceList)
+                            {
+                                <li>
+                                    <div>
+                                        @if (seqEl.Type == 0)
+                                        {
+                                            <p>
+                                                @CurrentBank.Lights.Find(item => item.Id == seqEl.LightId).Name
+                                                <input type="color" @bind-value="@seqEl.Color" />
+                                            </p>
+                                        }
+                                        else if (seqEl.Type == 1)
+                                        {
+                                            <p>Czekaj: <input @bind-value=seqEl.Duration type="number" />ms</p>
+                                        }
+                                        else
+                                        {
+                                            <p>Fade: <input @bind-value=seqEl.Duration type="number" />ms</p>
+                                        }
+                                        <button @onclick="() => RemoveSequenceElement(seqEl)">x</button>
+                                        <button @onclick='() => ChangeSequenceOrder(seqEl, 0)'> &lt</button>
+                                        <button @onclick='() => ChangeSequenceOrder(seqEl, 1)'> &gt</button>
+                                    </div>
+                                </li>
+                            }
+                        </ul>
+                    }
                     <button @onclick="() => SaveSequence()">Zapisz</button>
                 </section>
             }
-            else {
+            else
+            {
                 <section id="sequence-tree">
                     <ul>
                         @foreach (var seqEl in SequenceList)
@@ -318,6 +323,9 @@ Po włączeniu EditMode, pojawiają się dwa okienka
         ReadMIDIDevices();
     }
 
+    //------------------------------------------   DMX   ----------------------------------------------
+
+
     //------------------------------------------   MIDI READ   ---------------------------------------------
     Timer _updateTimer;
     public static string COMPort = "COM3";
@@ -396,7 +404,8 @@ Po włączeniu EditMode, pojawiają się dwa okienka
 
     public static void DetectMIDIDevice()
     {
-        if(MsgFromArduino != "") {
+        if (MsgFromArduino != "")
+        {
             string curMIDICh = "";
             for (int i = 3; i < MsgFromArduino.Length; i++)
             {
@@ -726,7 +735,8 @@ Po włączeniu EditMode, pojawiają się dwa okienka
     public static async Task RemoveLight(int Id)
     {
         Light? _light = CurrentBank.Lights.Find(item => item.Id == Id);
-        if(_light != null) {
+        if (_light != null)
+        {
             CurrentBank.Lights.Remove(_light);
             WriteToBanks(BanksList);
             ChangeBank();
