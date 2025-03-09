@@ -16,11 +16,6 @@
             <input type="number" @bind-value=startCh />
             <input type="submit" @onclick="() => ChangeInfo()" onfocus="document.querySelector('#edit-light@(LightId)-toggler').click()" />
         </span>
-
-
-        @* <label>Kanał R: <input type="number" @bind-value=rCh /></label> *@
-        @* <label>Kanał G: <input type="number" @bind-value=gCh /></label> *@
-        @* <label>Kanał B: <input type="number" @bind-value=bCh /></label> *@
     }
     else {
         <p>@LightName</p>
@@ -39,17 +34,11 @@
     public bool EditMode { get; set; }
     [Parameter]
     public int startCh { get; set; }
-    [Parameter]
-    public int rCh { get; set; }
-    [Parameter]
-    public int gCh { get; set; }
-    [Parameter]
-    public int bCh { get; set; }
 
     public async void ChangeInfo()
     {
         await Task.Delay(15);
-        LightView.ChangeLightInfo(LightId, LightName, startCh, rCh, gCh, bCh);
+        LightView.ChangeLightInfo(LightId, LightName, startCh);
     }
     
 }
