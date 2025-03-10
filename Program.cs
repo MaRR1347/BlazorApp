@@ -1,13 +1,23 @@
 using BlazorApp1;
 using BlazorApp1.Components;
 using Microsoft.AspNetCore.Components.Server;
+using BlazorApp1.DBContext;
+using BlazorApp1.Hubs;
+using BlazorApp1.Services;
+using Microsoft.EntityFrameworkCore;
 
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
 builder.Services.AddRazorComponents()
     .AddInteractiveServerComponents();
+
+builder.Services.AddSignalR();
+
 builder.Services.AddSingleton<JSONService>();
+builder.Services.AddSingleton<QueueService>();
+builder.Services.AddSingleton<SongService>();
+
 builder.Services.Configure<CircuitOptions>(options => options.DetailedErrors = true);
 
 var app = builder.Build();
@@ -20,6 +30,17 @@ if (!app.Environment.IsDevelopment())
     app.UseHsts();
 }
 
+var lifetime = app.Services.GetRequiredService<IHostApplicationLifetime>();
+lifetime.ApplicationStarted.Register(() =>
+{
+    var context = new AppDBContext();
+
+    context.Database.ExecuteSqlRaw("DELETE FROM queue");
+    context.Database.ExecuteSqlRaw("DELETE FROM sqlite_sequence WHERE name='queue'");
+
+});
+
+
 app.UseHttpsRedirection();
 
 app.UseStaticFiles();
@@ -27,5 +48,7 @@ app.UseAntiforgery();
 
 app.MapRazorComponents<App>()
     .AddInteractiveServerRenderMode();
+
+app.MapHub<QueueHub>("/queuehub");
 
 app.Run();

@@ -31,8 +31,8 @@
             {
                 @if (EditLightMode)
                 {
-                    <div style='position: absolute; left: @(light.xPos)px; top: @(light.yPos)px;'
-                    onmousedown="MouseDown(this, event)" onmousemove="MouseMove(this, event)" onmouseup="MouseUp(this, @light.Id)" onmouseleave="MouseUp(this, @light.Id)">
+                    <div style='position: absolute; left: @(light.xPos)px; top: @(light.yPos)px;' draggable="true" @ondragstart="OnDragStart" @ondragend="(args) => OnDragEnd(args, light)">
+                        <button @onclick="() => RemoveLight(light)">X</button>
                         <Light LightId="@light.Id"
                         LightName="@light.Name"
                         EditMode=true
@@ -63,6 +63,24 @@
         }
     }
 </section>
+
+@code
+{
+    private double startX, startY, offsetX, offsetY;
+
+    private void OnDragStart(DragEventArgs args)
+    {
+        startX = args.ClientX;
+        startY = args.ClientY;
+    }
+
+    private void OnDragEnd(DragEventArgs args, Light light)
+    {
+        light.xPos += (int)(args.ClientX - startX);
+        light.yPos += (int)(args.ClientY - startY);
+        WriteToBanks(BanksList);
+    }
+}
 
 <section id="preset-preview">
     <section id="preset-container">
@@ -265,32 +283,6 @@
         <p style="height: 16px; width: 16px; border: 1px solid black; border-radius: 50%;"></p>
     }
 </section>
-
-@* Script for moving lights in lights-preview *@
-<script>
-    @isDragging = false;
-
-    function MouseDown(el, event) {
-    @isDragging = true;
-    offsetX = event.clientX - el.offsetLeft;
-    offsetY = event.clientY - el.offsetTop;
-    }
-
-    function MouseMove(el, event) {
-    if(@isDragging) {
-    el.style.left = parseInt((event.clientX - offsetX)/5)*5 + 'px';
-    el.style.top = parseInt((event.clientY - offsetY)/20)*20 + 'px';
-    }
-    }
-
-    function MouseUp(el, lightId) {
-    @isDragging = false;
-    let xPos = el.style.left;
-    let yPos = el.style.top;
-    DotNet.invokeMethodAsync('BlazorApp1', 'ChangeLightPos', lightId, xPos, yPos)
-    .catch(err => console.error(err));
-    }
-</script>
 
 @code {
     //-------------------------------------------  VARIABLES  ------------------------------------------------
@@ -814,8 +806,8 @@
     public class Bank
     {
         public int Id { get; set; }
-        public string Name { get; set; }
-        public List<Light> Lights { get; set; }
+        public string? Name { get; set; }
+        public List<Light>? Lights { get; set; }
 
     }
 
