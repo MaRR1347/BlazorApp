@@ -1,36 +1,54 @@
 ﻿@page "/songview"
 @rendermode InteractiveServer
 
+@using System.Text.RegularExpressions
+@inject Services.QueueService QueueService
+@inject Services.SongService SongsService
+@inject NavigationManager Navigation
+
+@using Models
+@using System.Text.RegularExpressions
+
 <section class="song-view">
     <div id="refresh-on-all-devices" class="refresh-bttn"><img src="Images/refresh.svg"/></div>
 
-    <section class="song" @onclick="() => {if(SettingsOn) TurnFramesOff();}">
-        <p class="s-title">Mistrz kukiełek</p>
-        <p class="s-key">Tonacja ciul wie jaka</p>
-        <p class="s-text">Koniec gry namiętności, wszystko się rozpada
-            Jestem twoim źródłem autodestrukcji
-            Żyły pompują strach, ssąc najciemniejszy mrok
-            Prowadząc do twojej konstrukcji śmierci
+    @if(queue.Count > 0)
+    {
+        GetText();
+        <section>
+            <pre>
+                @text
+            </pre>
+        </section>    
+    }
 
-            <span class="t-chords">JaKiEś A kor D y</span>
-            Skosztuj mnie, zobaczysz
-            Więcej to wszystko, czego potrzebujesz
-            <span class="t-chords">Jeśli som P oTrzessssssssssssssssssssssssssssssb ne</span>
-            Poświęcony temu,
-            Jak cię zabijam
+    @* <section class="song" @onclick="() => {if(SettingsOn) TurnFramesOff();}"> *@
+    @*     <p class="s-title">Mistrz kukiełek</p> *@
+    @*     <p class="s-key">Tonacja ciul wie jaka</p> *@
+    @*     <p class="s-text">Koniec gry namiętności, wszystko się rozpada *@
+    @*         Jestem twoim źródłem autodestrukcji *@
+    @*         Żyły pompują strach, ssąc najciemniejszy mrok *@
+    @*         Prowadząc do twojej konstrukcji śmierci *@
 
-            Pełzaj szybciej (szybciej)
-            Słuchaj swego władcy (władcy)
-            Twoje życie płonie szybciej (szybciej)
-            <span class="t-note">A może jakiś przypis</span>
-            Słuchaj swego władcy, władcy
+    @*         <span class="t-chords">JaKiEś A kor D y</span> *@
+    @*         Skosztuj mnie, zobaczysz *@
+    @*         Więcej to wszystko, czego potrzebujesz *@
+    @*         <span class="t-chords">Jeśli som P oTrzessssssssssssssssssssssssssssssb ne</span> *@
+    @*         Poświęcony temu, *@
+    @*         Jak cię zabijam *@
 
-            Władco marionetek, pociągam za twoje sznurki
-            <span class="t-note">Np teraz Hubert tańczy</span>
-            Wypaczam twój umysł i niszczę twoje sny
-            Oślepiony mną, nie widzisz nic
-        </p>
-    </section>
+    @*         Pełzaj szybciej (szybciej) *@
+    @*         Słuchaj swego władcy (władcy) *@
+    @*         Twoje życie płonie szybciej (szybciej) *@
+    @*         <span class="t-note">A może jakiś przypis</span> *@
+    @*         Słuchaj swego władcy, władcy *@
+
+    @*         Władco marionetek, pociągam za twoje sznurki *@
+    @*         <span class="t-note">Np teraz Hubert tańczy</span> *@
+    @*         Wypaczam twój umysł i niszczę twoje sny *@
+    @*         Oślepiony mną, nie widzisz nic *@
+    @*     </p> *@
+    @* </section> *@
 
     <section class="song-nav">
         <div class="song-nav-item" id="nav-back"><img src="Images/angle-left.svg" /></div>
@@ -40,7 +58,6 @@
         <div class="song-nav-item" id="nav-forward"><img src="Images/angle-left.svg" /></div>
     </section>
 </section>
-
 
 @if (SettingsOn)
 {
@@ -59,7 +76,65 @@
     </section>
 }
 
+<EditForm Model="queueToAdd" OnValidSubmit="AddToQueue" FormName="queue">
+    <DataAnnotationsValidator />
+    <ValidationSummary />
+    <div class="container">
+        <div class="row">
+            <div class="col-md-6">
+                <div class="mb-3">
+                    <label for="choose" class="form-label">Choose Song:</label>
+                    <InputSelect @bind-Value="queueToAdd.SongId">
+                        @for (int i = 1; i <= titles.Count(); i++)
+                        {
+                            <option value="@i">@titles[i - 1]</option>
+                        }
+                    </InputSelect>
+                </div>
+            </div>
+        </div>
+    </div>
+    <button type="submit" class="btn btn-primary">Submit</button>
+</EditForm>
+
+<div class="row">
+    <div class="col-md-8">
+        <table class="table">
+
+            <thead>
+                <tr>
+                    <th>Number</th>
+                    <th>Title</th>
+                    <th></th>
+                </tr>
+            </thead>
+
+            <tbody>
+
+
+                @for (int i = 0; i < queue.Count(); i++)
+                {
+                    int index = i;
+                    <tr>
+                        <td>@(i + 1)</td>
+                        <td>@titles[queue[i].SongId - 1]</td>
+                        <td>
+                            <button type="button" class="btn btn-danger" @onclick="@(()=>DeleteFromQueue(queue[index].Id))">Delete</button>
+                        </td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+</div>
+
 @code {
+    string? text;
+    List<string> titles = new List<string>();
+    List<BlazorApp1.Models.Queue> queue = new List<BlazorApp1.Models.Queue>();
+    BlazorApp1.Models.Queue queueToAdd = new BlazorApp1.Models.Queue();
+    Songs? currentSong;
+
     public bool SettingsOn = false;
     public bool ListOn = false;
     public bool QueueOn = false;
@@ -85,4 +160,53 @@
 
     }
 
+    public async Task AddToQueue()
+    {
+        await QueueService.AddToQueue(queueToAdd);
+
+        int id = queueToAdd.SongId;
+        queueToAdd = new BlazorApp1.Models.Queue();
+        queueToAdd.SongId = id;
+    }
+
+    public async Task DeleteFromQueue(int x)
+    {
+        await QueueService.DeleteFromQueue(x);
+    }
+
+    protected override async Task OnInitializedAsync()
+    {
+        await LoadData();
+        queueToAdd.SongId = 1;
+
+        QueueService.OnQueueChanged += async (_queue) =>
+        {
+            await LoadData();
+            await InvokeAsync(StateHasChanged);
+        };
+
+        SongsService.OnSongsChanged += async (_song) =>
+        {
+            await LoadData();
+            await InvokeAsync(StateHasChanged);
+        };
+    }
+
+    private async Task LoadData()
+    {
+        List<Songs> songs = await SongsService.GetAll();
+        titles.Clear();
+        foreach (var song in songs)
+        {
+            titles.Add(song.Title);
+        }
+
+        queue = await QueueService.GetAll();
+        if (queue.Count > 0) currentSong = songs[queue[0].SongId - 1];
+    }
+
+    private void GetText()
+    {
+        text = File.ReadAllText(@"Texts\" + Regex.Replace(currentSong.Title, @"\s", string.Empty) + ".txt");
+    }
 }
